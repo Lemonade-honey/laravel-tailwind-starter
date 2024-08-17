@@ -55,6 +55,10 @@ class AuthController extends Controller
                 'password' => $request->input('password')
             ]);
 
+            $profile = \App\Models\UserProfile::create([
+                'user_id' => $user->id
+            ]);
+
             return redirect()->route('login')->with('success', 'berhasil membuat user baru, silahkan login');
         }
 

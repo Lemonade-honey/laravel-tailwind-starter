@@ -1,1 +1,1 @@
-<h1 class="text-2xl font-medium text-uad-blue-400">{{ $title }}</h1>
+<h1 class="text-2xl font-medium mb-5">{{ $title }}</h1>
