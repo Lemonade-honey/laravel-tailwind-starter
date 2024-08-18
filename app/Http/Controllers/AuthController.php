@@ -19,18 +19,19 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        try{
-            if(Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')], $request->has('remember-me')))
-            {
+        try {
+            if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')], $request->has('remember-me'))) {
+                logInfo('login user : ' . auth()->user()->email);
+
                 return redirect()->route('dashboard');
             }
 
             // gagal auth
             return back()->withErrors('username atau password salah')->withInput(['email' => $request->input('email')]);
-        }
+        } catch (\Throwable $th) {
 
-        catch(\Throwable $th)
-        {
+            logError('login auth failed', $th);
+
             return back()->with('error', 'gagal dalam autentikasi. coba lagi nanti!');
         }
     }
@@ -48,7 +49,7 @@ class AuthController extends Controller
             'password' => ['required', 'min:6']
         ]);
 
-        try{
+        try {
             $user = \App\Models\User::create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
@@ -59,19 +60,25 @@ class AuthController extends Controller
                 'user_id' => $user->id
             ]);
 
-            return redirect()->route('login')->with('success', 'berhasil membuat user baru, silahkan login');
-        }
+            logInfo('register user berhasil', [
+                'new' => $user->email
+            ]);
 
-        catch(\Throwable $th)
-        {
+            return redirect()->route('login')->with('success', 'berhasil membuat user baru, silahkan login');
+        } catch (\Throwable $th) {
+
+            logError('create user failed', $th);
+
             return back()->with('error', 'gagal dalam membuat user baru. coba lagi nanti!');
         }
     }
 
     public function logout()
     {
-        if(Auth::check())
-        {
+        if (Auth::check()) {
+
+            logInfo('logout user : ' . auth()->user()->email);
+
             Auth::logout();
         }
 
